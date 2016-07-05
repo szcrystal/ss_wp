@@ -9,6 +9,10 @@
 
 get_header(); ?>
 
+<div id="content" class="site-content">
+
+<div class="wrap-blog clear">
+
 	<div id="primary" class="content-area">
 		<main id="main" class="site-main" role="main">
 
@@ -20,16 +24,60 @@ get_header(); ?>
 			the_post_navigation();
 
 			// If comments are open or we have at least one comment, load up the comment template.
-			if ( comments_open() || get_comments_number() ) :
-				comments_template();
-			endif;
+//			if ( comments_open() || get_comments_number() ) :
+//				comments_template();
+//			endif;
 
 		endwhile; // End of the loop.
 		?>
 
 		</main><!-- #main -->
+        
+        
+        <?php
+        $q = new WP_Query(array(
+        	'post_type'=> 'post',
+            'author' => get_the_author_meta( 'ID' ),
+           	'posts_per_page'=> 3,
+           	'post_status' => 'publish',
+            'orderby'=>'date ID',
+            'order'=>'DESC',
+        ));
+        
+        if ( $q -> have_posts() ) : ?>
+        
+        <div class="author-post clear">
+        	<h3>このブログの作者が書いた他の記事</h3>
+        	<?php while ( $q->have_posts() ) : $q->the_post(); ?>
+            <article class="index">
+            	<a href="<?php the_permalink(); ?>" title="<?php the_title(); ?>">
+            	<div class="wrap-thumb">
+                    <?php the_post_thumbnail(); ?>
+                </div>
+                
+                <div class="cover-bl">
+                    <div class="fright">
+                        <h4 class="entry-title"><?php the_title(); ?></h4>
+                    </div>
+                </div>
+                </a>
+            </article>
+            
+            <?php
+            endwhile; ?>
+		</div>
+
+		<?php endif;
+        
+        
+        ?>
 	</div><!-- #primary -->
 
 <?php
-get_sidebar();
+get_sidebar(); ?>
+
+</div>
+
+<?php
 get_footer();
+

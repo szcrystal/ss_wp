@@ -9,16 +9,6 @@
 get_header(); ?>
 
 
-<div class="wrap-cal" data-speed="2.5" data-y="0">
-    <div class="cal">
-    
-    <img src="<?php thisUrl('images/0461.jpg'); ?>">
-    
-    </div>
-</div>
-
-<h1 class="entry-t" data-speed="2.8" data-y="370">メンバー一覧</h1>
-<?php //the_title( '', '</h1>' ); ?>
 
 
 <div id="content" class="site-content">
@@ -29,7 +19,7 @@ get_header(); ?>
 		if ( have_posts() ) : ?>
 
 			<header class="page-header">
-            	<h1 class="entry-title"><i class="fa fa-circle"></i>エンジニア</h1>
+            	<h1 class="entry-title">ソラシードの愉快な仲間たちのご紹介</h1>
 				<?php
 					//the_archive_title( '<h1 class="page-title">', '</h1>' );
 					//the_archive_description( '<div class="taxonomy-description">', '</div>' );
@@ -37,18 +27,31 @@ get_header(); ?>
 			</header>
             
             <?php
+            $typeArr = array(
+            	'エンジニア',
+                '営業',
+                '事務',
+            );
+            
+            foreach($typeArr as $key => $val) {
+            
             $wp_query = new WP_Query(
                 array(
                     'post_type'=>'member',
-                    //'posts_per_page' => 5,
+                    'meta_key' => 'job_type',
+                    'meta_value' => $val,
                     'orderby'=>'date ID',
                     'order'=>'ASC',
                 )
             );         
 
 
-			/* Start the Loop */
-			while ( $wp_query->have_posts() ) : $wp_query->the_post();
+			if($wp_query->have_posts()) { ?>
+            <div class="clear">
+            <h2><i class="fa fa-circle"></i><?php echo $val; ?></h2>
+            
+			<?php 
+            while ( $wp_query->have_posts() ) : $wp_query->the_post();
 
 				get_template_part( 'template-parts/content', 'member' );
 
@@ -56,7 +59,13 @@ get_header(); ?>
 
 			//the_posts_navigation();
 
-			wp_reset_query();
+			wp_reset_query(); ?>
+            
+            </div>
+            
+            <?php } 
+            
+            }
 
 
 endif;

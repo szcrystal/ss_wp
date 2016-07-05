@@ -5,7 +5,7 @@ var szcExec = (function() {
 	return {
     
 		opts: {
-            crtClass: 'current',
+            crtClass: 'crnt',
             btnID: '.top_btn',
             all: 'html, body',
             animEnd: 'webkitAnimationEnd MSAnimationEnd oanimationend animationend', //mozAnimationEnd
@@ -13,8 +13,11 @@ var szcExec = (function() {
         },
         
 		addCurrent: function() {
-        	var url = window.location;
-            $('.main-navigation a[href="'+url+'"]').addClass(this.opts.crtClass);
+        	var url = window.location.href;
+            var urls = url.split('/'); //explode          
+            url= urls[0] + '//' + urls[2] + '/' + urls[3] + '/';
+            
+            $('.main-navigation a[href^="'+url+'"]').siblings('div').addClass(this.opts.crtClass);
         },
         
         
@@ -58,7 +61,7 @@ var szcExec = (function() {
         },
         
         isLocal: function() {
-        	if( location.port == 8002 ) return true;
+        	if( location.port == 8006 ) return true;
         },
         
         isSpTab: function() {
@@ -187,32 +190,44 @@ var szcExec = (function() {
             });
 		},
         
-        settingSize: function(){
+        settingSize: function() {
+        	
+            var th = this;
         	
             var ww = $(window).width();
             var hh = $(window).height();
             var aspect = hh - (ww/3)*2; //over Aspect 3:2
             
-            var vw = $('#page').width();
-            vw = (vw - ww)/2;
+//            var vw = $('#page').width();
+//            vw = (vw - ww)/2;
+            
+            $('.load').css({height:hh}); //load画面
             
             if(aspect > -115) { //over Aspect > set height, org:-55
-                $('.top #mainMv').css({height:hh,width:'auto'}); 
+                $('.top #mainMv').css({height:hh,width:'auto'});
+                console.log('aspect big'); //下切れの時
             }
             else {
             	$('.top #mainMv').css({width:'105%',height:'auto'});
+                console.log('aspect small');
             }
             
             var $ctr = $('.ctr');
+            var $ent = $('.ent');
             var cw = $ctr.width();
             var ch = $ctr.height();
             
+            var ew = $ent.width();
+            var eh = $ent.height();
             
-            $ctr.css({left:ww/2-(cw/2), top:hh/2-(ch/2)-30});
+            $ent.css({left:ww/2-(ew/2)+10, top:hh/2-(eh/2)-50});
+            $ctr.css({left:ww/2-(cw/2)+10, top:hh/2-(ch/2)-50});
             
+            $('#mainMv').fadeIn(100);
             
             
             /* --- */
+            /*
 			$('#filt').css({height:hh, width:ww});
  
             var ttw = $('.sTitle').width();
@@ -224,7 +239,7 @@ var szcExec = (function() {
             
             var nvb = $('.topmBtn').width();
             $('.topmBtn').css({left:(ww-nvb)/2+9, top:hh/2+35});
-
+			*/
         },
         
         setFilterSize: function(){
@@ -252,17 +267,24 @@ var szcExec = (function() {
             
             
             //Video And Loader ---------------------
-            if($('body').hasClass('home') || $('#page').hasClass('about')) {
+            if($('body').hasClass('home')) {
                 var video = document.getElementById('mainMv');
                 //var video = $('#mainMv').get(0);
                 
                 video.addEventListener('playing', function(){ //This is Not In window.load()
                     //console.log(video.currentTime);
-                    $('.cal').find('img.agif').fadeOut(700, 'linear', function(){
-                    	setTimeout(function(){
-                        	$('.ctr').fadeIn(2500);
-                        }, 1500);
-                    });
+                    //$('.cal').find('img.agif').fadeOut(700, 'linear', function(){
+                    $load = $('.load');
+                    
+                    setTimeout(function(){
+                        $load.find('.ent').fadeOut(800, 'swing', function(){
+                            $load.fadeOut(2000, 'linear', function(){
+                                setTimeout(function(){
+                                    $('.ctr').fadeIn(2500);
+                                }, 1500);
+                            });
+                        });
+                    }, 2500);
                     
                 }, false);
             
@@ -315,12 +337,19 @@ var szcExec = (function() {
         	$('.ctr .fa').on('click', function(){
             	
                 $('.ctr').fadeOut(500, function(){
-                    $('body').fadeOut(1300, 'linear', function(){
-                        $(this).load('/about/', function(){
+                    $('body').fadeOut(700, 'linear', function(){
+                    	//$('head').load("/about/ meta, link, script, style, title");
+                        $(this).load("/about/", function(){
                             
                             $('#page.about').hide();
                             
-                            $(this).removeClass('home').fadeIn(700, function(){
+                            var title = $(this).find('title').text();
+                            $('head > title').text(title);
+                            
+                            $(this).children('meta, link, script, style, title').remove();
+                            
+                            $(this).removeClass('home').fadeIn(400, function() {
+                            	
                                 $('#page.about').fadeIn(1000);
                             
                             });
@@ -335,7 +364,7 @@ var szcExec = (function() {
                     });
                 });
                 
-                history.pushState('', 'About', '/about/'); //詳細はbookにあり HTML5のHistoryAPIを使用してリロードなしのページ遷移が出来る
+                history.pushState('', 'About', '/about/');
                 
                 return false;
             });
@@ -343,7 +372,7 @@ var szcExec = (function() {
         
         
         typeWriter: function() {
-        	var $h = $('h1.entry-t');
+        	var $h = $('p.entry-t');
             
             var str = $h.text();
             var len = str.length;
@@ -389,20 +418,34 @@ var szcExec = (function() {
                     }
                     else {
                     	//clearInterval();
+//                        $h.text('');
+//                        ss='';
+//                        i=0;
                     }
-                
-                }, 120);
+                	
+                }, 320);
             	
+                
                 //i++;     
             }
             
+            //setInterval( function(){
+            
             setTimeout(function(){ //初回表示の時用　この時にも少しタイミングをずらす
+            	//i = 0;
             	t(i);
-            }, 1500);
+                
+            }, 500);
+            //}, timeLag);
             
             //$('p').html(str);
             //this.put('p', h);
             
+        },
+        
+        rep: function(){
+        	var th = this;
+            setInterval( th.typeWriter, 400);
         },
         
         put: function(tag, argText) {
@@ -422,7 +465,7 @@ var szcExec = (function() {
 
 $(function(e){ //ready
     
-    //szcExec.addCurrent(); 
+    szcExec.addCurrent(); 
     //szcExec.scrollFunc();
 
     //szcExec.slideMenu();
@@ -432,13 +475,15 @@ $(function(e){ //ready
     //szcExec.searchAnim();
     //szcExec.contentPosi();
     
-    szcExec.scrFunc();
+    //szcExec.scrFunc();
     //szcExec.setFilterSize();
+    
+    szcExec.settingSize();
     szcExec.contentPosi();
     szcExec.scrEve();
-    szcExec.settingSize();
     szcExec.historyLink();
     szcExec.typeWriter();
+    //szcExec.rep();
     //szcExec.aaa();
     //if(szcExec.isLocal()) szcExec.checkWidth();
 });

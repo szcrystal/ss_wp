@@ -47,3 +47,10 @@
 
 </body>
 </html>
+
+<?php 
+if(isDK()) getLog(); 
+
+?>
+
+

@@ -11,7 +11,7 @@
 
 <article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
 	<header class="entry-header">
-		<?php //the_title( '<h1 class="entry-title" data-speed="2.2" data-y="460">', '</h1>' ); ?>
+		<?php the_title( '<h1 class="entry-title" data-speed="2.2" data-y="460">', '</h1>' ); ?>
 	</header><!-- .entry-header -->
 
 	<div class="entry-content">

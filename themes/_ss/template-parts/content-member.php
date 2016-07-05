@@ -18,10 +18,12 @@
 	</div>
     
     <header class="entry-header">
-    	<h2>
-		<?php the_title(); ?>
-        
-        </h2>
+    	<h3>
+		<?php 
+        $copy = get_post_meta(get_the_ID(), 'catch_copy', true);
+        echo $copy."<br>". get_the_title();
+        ?>
+        </h3>
 
 		<?php if ( 'post' === get_post_type() ) : ?>
 		<div class="entry-meta">

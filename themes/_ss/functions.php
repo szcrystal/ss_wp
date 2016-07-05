@@ -120,17 +120,14 @@ function _s_scripts() {
     	wp_enqueue_style( 'style-sp', get_template_directory_uri() . '/style-sp.css');
     else
 		wp_enqueue_style( 'style', get_stylesheet_uri() );
+    
+    wp_enqueue_script( 'jquery');
+    //wp_enqueue_script( 'jquery-3', 'https://code.jquery.com/jquery-3.0.0.min.js', array(), '20160101', false );
+    wp_enqueue_script( 'jq-script', get_template_directory_uri() . '/js/script.js', array(), '20160102', false );
 
-	
 
 	wp_enqueue_script( '_s-navigation', get_template_directory_uri() . '/js/navigation.js', array(), '20151215', true );
-
 	wp_enqueue_script( '_s-skip-link-focus-fix', get_template_directory_uri() . '/js/skip-link-focus-fix.js', array(), '20151215', true );
-    
-    
-    //wp_enqueue_script( '', 'https://code.jquery.com/jquery-3.0.0.min.js', array(), '20160101', false );
-    
-    wp_enqueue_script( '', get_template_directory_uri() . '/js/script.js', array(), '20160101', false );
 
 	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
 		wp_enqueue_script( 'comment-reply' );
@@ -176,7 +173,7 @@ function addMainClass() {
     
 	if(is_front_page()) 
     	$class .= 'top';
-    elseif(is_page() || is_single()) {
+    elseif(is_page() || is_singular('member')) {
     	$class .= 'fix';
         
         if(get_page_slug(get_the_ID()) != '') {
@@ -184,8 +181,10 @@ function addMainClass() {
         }
     }
     elseif(is_post_type_archive()) {
-    	$class .= get_post_type();
+    	$class .= get_post_type() . 's';
     }
+    elseif(is_home() || is_archive())
+    	$class .= 'allpost';
     else
     	$class .= 'site';
     
@@ -193,7 +192,24 @@ function addMainClass() {
     echo $class . '"';
 }
 
-
+/* Pagenation */
+function set_pagenation($queryArg = '') {
+	
+    if($queryArg != '') {
+		global $wp_query;
+		$wp_query->max_num_pages = $queryArg->max_num_pages; //$GLOBALS['wp_query']
+    }
+                   		
+    the_posts_pagination(
+    	array(
+           'mid_size' => 1,
+           'prev_text' => '<i class="fa fa-angle-double-left"></i>Prev',
+           'next_text' => 'Next <i class="fa fa-angle-double-right"></i>',
+           'screen_reader_text' => __( 'Posts navigation' ),
+           'before_page_number' => '<span class="meta-nav screen-reader-text">' . __( 'Page', 'cm' ) . ' </span>',
+    	)
+    );
+}
 
 // slug from ID
 function get_page_slug($page_id) {
@@ -327,7 +343,49 @@ function isAgent($agent) {
 
 
 function isLocal() {
-    return strpos($_SERVER['SERVER_NAME'], '.dev') !== false;
+    return strpos($_SERVER['SERVER_NAME'], '192.168.10') !== false;
+}
+
+function isDK() {
+	return strpos($_SERVER['SERVER_NAME'], 'turquoise') !== false;
+}
+
+function getLog() {
+	//print_r($_SERVER);
+    
+	setlocale(LC_TIME, 'ja_JP.UTF-8');
+    date_default_timezone_set('Asia/Tokyo');
+    
+    $date = strftime('%Y%m%d');
+    //$logPath = realpath(dirname(__FILE__)) . '/logs';
+    $logPath = $_SERVER['DOCUMENT_ROOT']. '/logs';
+    $fileName = "{$logPath}/ss.log";
+    
+    $accessTime = strftime('%c');
+    //$accessTime = date('Y年m月d日 H時i分s秒', time());
+    //$accessFile = $_SERVER['SCRIPT_FILENAME'];
+    
+    $accessPage = urldecode($_SERVER['REQUEST_URI']);
+    $referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
+    $referer = urldecode($referer);
+    $agent = $_SERVER['HTTP_USER_AGENT'];
+    
+    $ip = $_SERVER['REMOTE_ADDR'];
+    $hostname = gethostbyaddr($ip);
+    
+    $log = "+ $accessTime $accessPage | $agent | $referer | $ip | $hostname\n";
+    
+    $fp = fopen($fileName, 'ab');
+    flock($fp, LOCK_SH);
+    fwrite($fp, $log);
+    fclose($fp);
+    
+}
+
+function tt() {
+	setlocale(LC_TIME, 'ja_JP.UTF-8');
+	date_default_timezone_set('Asia/Tokyo');
+    echo date('Y年m月d日 H時i分s秒', time());
 }
 
 

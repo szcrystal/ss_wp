@@ -6,7 +6,6 @@
  *
  * @link https://developer.wordpress.org/themes/basics/template-files/#template-partials
  *
- * @package _s
  */
 
 ?><!DOCTYPE html>
@@ -16,7 +15,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="profile" href="http://gmpg.org/xfn/11">
 <link rel="pingback" href="<?php bloginfo( 'pingback_url' ); ?>">
-<script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
 <?php wp_head(); ?>
 </head>
 
@@ -41,62 +39,70 @@
 		</div>
         
             <nav id="site-navigation" class="main-navigation" role="navigation">
-                <?php //wp_nav_menu( array( 'theme_location' => 'primary', 'menu_id' => 'primary-menu' ) ); 
+                <?php 
+                                
+                	if(isAgent('MSIE')) { 
+                		wp_nav_menu( array( 'theme_location' => 'primary', 'menu_id' => 'primary-menu' ) ); 
+                	}
+                    else {
                 ?>
                 
                 <ul>
             	<li data-text="mission">
                     <a href="<?php echo outUrl('about'); ?>" class="alk"></a>
                     <div>
-                        <span class="st">About</span>
-                    	<span class="ft">ソラシードとは？</span>
+                        <span class="st"><i class="fa fa-angle-double-right" aria-hidden="true"></i>About</span>
+                    	<span class="ft"><i class="fa fa-arrow-right" aria-hidden="true"></i>ソラシードとは？</span>
                     </div>
                 </li>
                 <li data-text="about">
                 	<a href="<?php echo home_url().'/member/'; ?>" class="alk"></a>
                     <div>
-	                	<span class="st">Member</span>
-    	                <span class="ft">メンバー</span>
+	                	<span class="st"><i class="fa fa-angle-double-right" aria-hidden="true"></i>Member</span>
+    	                <span class="ft"><i class="fa fa-arrow-right" aria-hidden="true"></i>メンバー</span>
                     </div>
                 </li>
                 
                 <li data-text="service">
-                    <a href="#" class="alk"></a>
+                    <a href="<?php echo outUrl('blog'); ?>" class="alk"></a>
                     <div>
-                		<span class="st">Blog</span>
-                    	<span class="ft">ブログ</span>
+                		<span class="st"><i class="fa fa-angle-double-right" aria-hidden="true"></i>Blog</span>
+                    	<span class="ft"><i class="fa fa-arrow-right" aria-hidden="true"></i>ブログ</span>
                     </div>
                 </li>
                 <li data-text="media">
                 	<a href="<?php outUrl('company'); ?>" class="alk"></a>
                     <div>
-                		<span class="st">Company</span>
-                    	<span class="ft">会社概要</span>
+                		<span class="st"><i class="fa fa-angle-double-right" aria-hidden="true"></i>Company</span>
+                    	<span class="ft"><i class="fa fa-arrow-right" aria-hidden="true"></i>会社概要</span>
                     </div>
                 </li>
                 <li data-text="contact">
                 	<a href="<?php outUrl('outline'); ?>" class="alk"></a>
                     <div>
-                		<span class="st">Outline</span>
-                    	<span class="ft">事業内容</span>
+                		<span class="st"><i class="fa fa-angle-double-right" aria-hidden="true"></i>Outline</span>
+                    	<span class="ft"><i class="fa fa-arrow-right" aria-hidden="true"></i>事業内容</span>
                     </div>
                 </li>
                 <li data-text="contact">
                 	<a href="<?php outUrl('recruit'); ?>" class="alk"></a>
                     <div>
-                		<span class="st">Recruit</span>
-                    	<span class="ft">採用情報</span>
+                		<span class="st"><i class="fa fa-angle-double-right" aria-hidden="true"></i>Recruit</span>
+                    	<span class="ft"><i class="fa fa-arrow-right" aria-hidden="true"></i>採用情報</span>
                     </div>
                 </li>
                 <li data-text="contact">
                 	<a href="<?php outUrl('greeting'); ?>" class="alk"></a>
                     <div>
-                		<span class="st">Hello</span>
-                    	<span class="ft">代表挨拶</span>
+                		<span class="st"><i class="fa fa-angle-double-right" aria-hidden="true"></i>Hello</span>
+                    	<span class="ft"><i class="fa fa-arrow-right" aria-hidden="true"></i>代表挨拶</span>
                     </div>
                 </li>
                 
             </ul>
+            
+              <?php } ?>  
+                
             </nav><!-- #site-navigation -->
         
 	</header><!-- #masthead -->

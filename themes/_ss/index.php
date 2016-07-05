@@ -6,6 +6,10 @@
 
 get_header(); ?>
 
+<div class="load">
+<p class="ent"><img src="<?php thisUrl('images/symbol.png'); ?>"></p>
+</div>
+
 <div class="wrap-cal" data-speed="2.5" data-y="60">
     <div class="cal">
 
@@ -51,7 +55,7 @@ get_header(); ?>
         </video>
         <?php if(! isAgent('tab')) { ?>
 
-        	<img src="<?php thisUrl($loader); ?>" class="agif">
+        	<!-- <img src="<?php thisUrl($loader); ?>" class="agif"> -->
         <?php } ?>
 
     </div>
