@@ -22,8 +22,6 @@ get_header(); ?>
 
 			//the_post_navigation();
 
-			
-
 		endwhile; // End of the loop.
 		?>
 
@@ -31,5 +29,5 @@ get_header(); ?>
 	</div><!-- #primary -->
 
 <?php
-//get_sidebar();
 get_footer();
+

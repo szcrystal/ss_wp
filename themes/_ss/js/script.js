@@ -14,10 +14,17 @@ var szcExec = (function() {
         
 		addCurrent: function() {
         	var url = window.location.href;
-            var urls = url.split('/'); //explode          
-            url= urls[0] + '//' + urls[2] + '/' + urls[3] + '/';
-            
-            $('.main-navigation a[href^="'+url+'"]').siblings('div').addClass(this.opts.crtClass);
+            var urls = url.split('/'); //explode
+                        
+            if(urls[3] == 'wordpress') {
+        	//if(urls.length > 5) {
+            	url= urls[0] + '//' + urls[2] + '/' + urls[3] + '/' + urls[4] + '/';
+            }
+            else {
+	            url= urls[0] + '//' + urls[2] + '/' + urls[3] + '/';
+    		}
+                    
+            $('.main-navigation a[href^="'+url+'"]').addClass(this.opts.crtClass);
         },
         
         
@@ -40,22 +47,6 @@ var szcExec = (function() {
         },
         
         
-        slideMenu: function() {
-        	$('.tgl-on').on('click', function(){
-            	var $nav = $(this).find('ul');
-                
-            	$nav.slideToggle(300);
-                
-//            	if($nav.is(':hidden')) {
-//                	$nav.slideDown(300);
-//                }
-//                else {
-//                	$nav.slideUp(300);
-//                }
-            });	
-        },
-                
-        
         isAgent: function(user) {
             if( navigator.userAgent.indexOf(user) > 0 ) return true;
         },
@@ -64,16 +55,29 @@ var szcExec = (function() {
         	if( location.port == 8006 ) return true;
         },
         
-        isSpTab: function() {
-        	var arr = ['iPhone','iPod','Mobile ','Mobile;','Windows Phone','IEMobile', 'iPad','Kindle','Sony Tablet','Nexus 7','Android Tablet'];
+        isSpTab: function(arg) {
+
+        	var spArr = ['iPhone','iPod','Mobile ','Mobile;','Windows Phone','IEMobile'];
+            var tabArr = ['iPad','Kindle','Sony Tablet','Nexus 7','Android Tablet'];
+            var arr = [];
+            
+            if(arg == 'sp')
+            	arr = spArr;
+            
+            else if(arg == 'tab')
+            	arr = tabArr;
+            
+            else
+            	arr = spArr.concat(tabArr);
+            
         	
             var th = this;
             var bool = false;
             
-            arr.forEach(function(e, i, a) { //e:要素 i:index a:配列オブジェクト
+            arr.forEach(function(e, i, a) {
             	if(th.isAgent(e)) {
                 	bool = true;
-                    return; //Escape Roop
+                    return; //Exit
                 }
             });
             
@@ -81,114 +85,28 @@ var szcExec = (function() {
         },
         
         
-        addAnim: function() {
-        	var th = this;
-            
-            //Set Size to A tag
-        	function setHeightToA() {
-            	//var $index = $('.bl-belt article.index, .rank article.index');
-                var $index = $('article.index');
-
-                $index.each(function(){
-                                        
-                    //$(this).find('img').load(function(){
-                        var $a = $(this)/*.parent('article.index')*/;
-                        var ah = $a.height();
-                        //$a.find('.entry-meta').text(ah);
-                        $a.find('.cover-bl > a').css({height:ah});
-                    //});
-            	});
-			}
-
-            $(window).on({
-            	'load': setHeightToA,
-            	'resize': setHeightToA,
-            });
-            
-            
-            //SET Number to Runking
-            $('.rank section').each(function(){ 
-            	var len = $(this).find('article.index').length;
-                var n = 0;
-                
-                while(n < len) {
-                	$(this).find('article.index').eq(n).children('span.rank-num').text(n+1);
-                    n++;
-                }
-            });
-            
+        setAspectForPc: function(ww, hh, aspect) {
+        	if(aspect > -115) { //over Aspect > set height, org:-55
+                $('.top #mainMv').css({height:hh,width:'auto'});
+                console.log('aspect big'); //下切れの時
+            }
+            else {
+            	$('.top #mainMv').css({width:'105%',height:'auto'});
+                console.log('aspect small');
+            }
         },
         
-        searchAnim: function() {
-        	var $s = $('.site-header .fa-search');
-            var $form = $('.search-form');
+        setAspectForSp: function(ww, hh, aspect) {
+        	if(aspect > 25) { //over Aspect > set height, org:-55
+                $('#mainMv').css({backgroundSize:'auto '+ hh+'px'});
+                console.log('aspect big'); //下切れの時
+            }
+            else {
+            	$('#mainMv').css({backgroundSize:'105% auto'});
+                console.log('aspect small');
+            }
             
-            $s.on('click', function(e){
-            	e.preventDefault();
-            	//$('h2').text($form.offset().top);
-                //$('h3').text($('.site-header').offset().top);
-                
-            	if($form.offset().top == $('.site-header').offset().top) {/* *** */
-            		$form.animate({ top:57 }, 900, 'easeOutElastic',function(){ //easeOutElastic easeOutBack
-                    	$(this).find('input[type="search"]').focus();
-                    });
-                } else {
-                	$form.animate({ top:0 }, 'normal', 'easeInBack');
-                }
-
-            });
-            
-            $('#page').on('click', function(e){
-            	if(! $(e.target).hasClass('search-field')) {
-            		if($form.offset().top != $('.site-header').offset().top)
-                		$form.animate({ top:0 }, 'normal', 'easeInBack');
-                }
-            });
-		},
-        
-        
-        checkWidth: function() {
-    		$(window).on({
-            	'load': function(){
-                    $('h2').text($(window).width());
-                },
-                'resize': function(){
-                    $('h2').text($(window).width());
-				},
-            });
         },
-        
-        scrFunc: function() {
-        	//$('h3').text($(window).scrollTop());
-        	
-            //console.log('abcde');
-            
-            $(window).scroll(function() {
-            	if($(window).scrollTop() <= 100) {
-                	//$('.wrap-head').removeClass('changeColor').addClass('returnColor');
-                    //$('.wrap-head').animate({height:'5em'}, 200, 'linear');
-                    /*
-                    $('.site-header').css({backgroundColor:'transparent'});
-                    $('.main-navigation').css({backgroundColor:'transparent'});
-                    */
-                    $('.site-header').animate({top:0}, 500, 'easeOutBack', function(){
-                    	$(this).queue([]).stop();
-                    });
-                }
-                if($(window).scrollTop() >= 400) {
-                    //$('.wrap-head').removeClass('returnColor').addClass('changeColor');
-                    //$('.main-navigation').css({top:'20px', left:'500px', position:'fixed', display:'inline-block'});
-                    /*
-                    $('.site-header').css({backgroundColor:'rgba(255,255,255,0.88)'});
-                    $('.main-navigation').css({backgroundColor:'rgba(22,36,39,0.95)'});
-                    */
-                    //$('.site-header').css({top:'-300px'});
-                    $('.site-header').animate({top:'-150px'}, 500, 'easeInBack', function(){
-                    	$(this).queue([]).stop();
-                    });
-                }
-            });
-		},
         
         settingSize: function() {
         	
@@ -201,15 +119,13 @@ var szcExec = (function() {
 //            var vw = $('#page').width();
 //            vw = (vw - ww)/2;
             
-            $('.load').css({height:hh}); //load画面
+            $('.load').css({height:hh}); //load
             
-            if(aspect > -115) { //over Aspect > set height, org:-55
-                $('.top #mainMv').css({height:hh,width:'auto'});
-                console.log('aspect big'); //下切れの時
+            if(szcExec.isSpTab('all')) {
+            	szcExec.setAspectForSp(ww, hh, aspect);
             }
             else {
-            	$('.top #mainMv').css({width:'105%',height:'auto'});
-                console.log('aspect small');
+            	szcExec.setAspectForPc(ww, hh, aspect);
             }
             
             var $ctr = $('.ctr');
@@ -220,60 +136,45 @@ var szcExec = (function() {
             var ew = $ent.width();
             var eh = $ent.height();
             
-            $ent.css({left:ww/2-(ew/2)+10, top:hh/2-(eh/2)-50});
-            $ctr.css({left:ww/2-(cw/2)+10, top:hh/2-(ch/2)-50});
+            var adjust = szcExec.isSpTab('all') ? 0 : 25;
             
-            $('#mainMv').fadeIn(100);
+            $ent.css({left:ww/2-(ew/2)+10, top:hh/2-(eh/2)-adjust});
+            $ctr.css({left:ww/2-(cw/2)+10, top:hh/2-(ch/2)-adjust});
             
+            $('#mainMv:hidden').fadeIn(100);
             
-            /* --- */
-            /*
-			$('#filt').css({height:hh, width:ww});
- 
-            var ttw = $('.sTitle').width();
-            $('.sTitle').css({left:(ww-ttw)/2, top:hh/2-86});
-                        
-            var nvw = $('.top-navi').width();
-            $('.top-navi').css({left:(ww-nvw)/2, top:hh/2+10});
-            //$('h1').text(ww + ':' + hh + ':' + aspect);
-            
-            var nvb = $('.topmBtn').width();
-            $('.topmBtn').css({left:(ww-nvb)/2+9, top:hh/2+35});
-			*/
         },
         
-        setFilterSize: function(){
-        	var v = $('#mainMv')
+        
+        setWindowResize: function(){
+        	$(window).on('resize', this.settingSize);
             
-            $('.filter').css({width:v.width(), height:v.height()});
+            
+            $('.tgl').on('click', function(){
+            	$('.main-navigation').slideToggle(300);
+            });
+            
+            /*
+            $('#page').on('click', function(e){
+            	if(! $(e.target).hasClass('main-navigation') && ! $(e.target).hasClass('fa')) {
+            		$('.main-navigation:visible').slideUp(300);
+                }
+            });
+			*/
             
         },
         
         contentPosi: function() {
-       		
-            //SetHeight to Content
-//            function setHeightContent() {
-//            	var h = $('.cal').height();
-//                
-//                if($('body').hasClass('home') || $('body').hasClass('category')) {
-//                	$('#content').css({top:h+50}); /* site-header Height *** */
-//                }
-//            }
-//              
-//       		$(window).on({
-//            	'load': setHeightContent,
-//                'resize': setHeightContent,
-//            });
-            
             
             //Video And Loader ---------------------
-            if($('body').hasClass('home')) {
+            if($('body').hasClass('home') && ! this.isSpTab('all')) {
                 var video = document.getElementById('mainMv');
                 //var video = $('#mainMv').get(0);
                 
                 video.addEventListener('playing', function(){ //This is Not In window.load()
+                    
                     //console.log(video.currentTime);
-                    //$('.cal').find('img.agif').fadeOut(700, 'linear', function(){
+
                     $load = $('.load');
                     
                     setTimeout(function(){
@@ -296,165 +197,81 @@ var szcExec = (function() {
            
         },
         
-        scrEve: function() {
 
-        	var $window = $(window);
-            var wh = $(window).height();
-            var th = this;
-            
-            $sprite = $('.fix .wrap-cal, .member .wrap-cal');
-            $title = $('h1.entry-t');
-            //var t = $title.offset().top;
-            
-            $(window).scroll(function() {
-                    
-            	// '50%' + -($window.scrollTop() / 20) + 'px'
-                
-                var yPos = $sprite.data('y') - ($window.scrollTop() / $sprite.data('speed')); //data-y: wrap-calのTOP位置 
-                    
-                
-                //$('h1').text(t);
-                                
-                var yPos2 = $title.data('y') - ($window.scrollTop() / $title.data('speed'));
-                
-//                $section = $('.fix section');
-//                var t = $section.position().top;
-//
-//                var yPos3 = ($window.scrollTop() / ($window.scrollTop()-105));
-//                $('h1').text(yPos3);
-                
-                if($window.scrollTop() >= 0) { //scroll:0以下になるとガタつくので
-                    $sprite.css('top', yPos);
-                    $title.css('top', yPos2); 
-                    
-                	//$section.css({marginTop:yPos3 + 'px'});
-                }
-                
-       	 	});
-        },
-        
         historyLink: function() {
+        
         	$('.ctr .fa').on('click', function(){
             	
-                $('.ctr').fadeOut(500, function(){
+//                var data = {
+//                	prev_title: document.title,
+//                    prev_url: location.pathname,
+//                };
+                
+                var href = location.href;
+            
+            	history.pushState(null, 'ソラシードとは', href+'about/');
+            	
+                $('.ctr').fadeOut(500, function() {
                     $('body').fadeOut(700, 'linear', function(){
-                    	//$('head').load("/about/ meta, link, script, style, title");
-                        $(this).load("/about/", function(){
+                    	
+                        //$('.subgif').fadeTo(300);
+                        
+                        $(this).after('<img src="' + href + 'wp-content/themes/_ss/images/6.gif" class="subgif">');
+                        $('img.subgif').css({top:$(window).height()/2});
+
+                    	//location.reload();
+                        $(this).load(href+'about/', function(){
                             
                             $('#page.about').hide();
                             
                             var title = $(this).find('title').text();
+                            var link = $(this).find('link[href*="nextend"]');
                             $('head > title').text(title);
+                            $('head').append(link);
+                            //'<link rel="stylesheet" type="text/css" href="http://192.168.10.17:8006/wp-content/cache/nextend/web/n2-ss-1/n2-ss-1.css?1468130069" media="screen, print" />'
                             
-                            $(this).children('meta, link, script, style, title').remove();
+                            $(this).children('meta, script, link, style, title').remove();
                             
-                            $(this).removeClass('home').fadeIn(400, function() {
-                            	
+                            $(this).removeClass('home page-template-index page-template-index-php').addClass('page-template-default').fadeIn(400, function() {
+                            	$(this).siblings('.subgif').remove();
                                 $('#page.about').fadeIn(1000);
-                            
                             });
                         });
-
-    //                    $.get("../page.php", function(data){
-    //                      $("#page").text(data).fadeIn(200);
-    //                   });
-
-                        //$('#page.about').fadeIn(300);
                     
                     });
                 });
                 
-                history.pushState('', 'About', '/about/');
                 
                 return false;
             });
         },
         
         
-        typeWriter: function() {
-        	var $h = $('p.entry-t');
-            
-            var str = $h.text();
-            var len = str.length;
-            var h = $h.css('font-size');
-            var i = 0;
-            var ss = '';
-            
-            $h.css({display:'inline-block', lineHeight:'2em'});
-            
-            //$h.after('<span class="cursol">&nbsp;</span>');
-            $('.cursol').css({display:'inline-block', marginLeft:'10px', width:'3px',fontSize:h, background:'#111'});
-            
-            var timeLag = 400;
-            
-            setInterval( function(){ //cursolの点滅		
-                $('.cursol').hide(50, function(){
-                    var ct = $(this);
-                
-                    setTimeout(function(){
-                        ct.show();
-                        ct.queue([]).stop();
-                    }, timeLag);
-                    
-                });
-            }, timeLag);
-            
-            $h.text('');
-            //$h.text('abc');
-            
-            //while(i < len) {
-            
-            function t(i) {
-            	
-                setTimeout(function(){
-                    
-                    ss += str[i];
-                        
-                    $h.text(ss);
-                    i++;
-                       
-                    if(i < len) {
-                    	t(i);
-                    }
-                    else {
-                    	//clearInterval();
-//                        $h.text('');
-//                        ss='';
-//                        i=0;
-                    }
-                	
-                }, 320);
-            	
-                
-                //i++;     
-            }
-            
-            //setInterval( function(){
-            
-            setTimeout(function(){ //初回表示の時用　この時にも少しタイミングをずらす
-            	//i = 0;
-            	t(i);
-                
-            }, 500);
-            //}, timeLag);
-            
-            //$('p').html(str);
-            //this.put('p', h);
-            
-        },
-        
-        rep: function(){
-        	var th = this;
-            setInterval( th.typeWriter, 400);
-        },
-        
         put: function(tag, argText) {
             $(tag).text(argText);
             console.log("CheckText is『 %s 』" , argText);
         },
         
-        aaa: function() {
-        	$('h1').text('aaa');
+        clickFade: function() {
+        	$('.eng').on('click', function(){
+            	$('.webd-sec:visible, .ope-sec:visible').fadeOut(200, function(){
+                	$('.eng-sec').fadeIn(200, function(){
+                    	$(this).queue([]).stop();
+                    });
+                });
+            });
+            
+        	$('.web-d').on('click', function(){
+            	$('.eng-sec:visible, .ope-sec:visible').fadeOut(200, function(){
+                	$('.webd-sec').fadeIn(200);
+                });
+            });
+            
+            $('.ope').on('click', function(){
+            	$('.eng-sec:visible, .webd-sec:visible').fadeOut(200, function(){
+                	$('.ope-sec').fadeIn(200);
+                });
+            });
         },
         
         
@@ -465,27 +282,18 @@ var szcExec = (function() {
 
 $(function(e){ //ready
     
-    szcExec.addCurrent(); 
-    //szcExec.scrollFunc();
-
-    //szcExec.slideMenu();
-    
-    //szcExec.scrEve();
-    //szcExec.addAnim();
-    //szcExec.searchAnim();
-    //szcExec.contentPosi();
-    
-    //szcExec.scrFunc();
-    //szcExec.setFilterSize();
-    
     szcExec.settingSize();
     szcExec.contentPosi();
-    szcExec.scrEve();
+
     szcExec.historyLink();
-    szcExec.typeWriter();
-    //szcExec.rep();
-    //szcExec.aaa();
-    //if(szcExec.isLocal()) szcExec.checkWidth();
+    
+    szcExec.setWindowResize();
+    
+    szcExec.addCurrent(); 
+    szcExec.clickFade();
+    
+    szcExec.scrollFunc();
+    
 });
 
 

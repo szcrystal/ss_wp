@@ -15,7 +15,7 @@ if ( ! is_active_sidebar( 'sidebar-1' ) ) {
 <aside id="secondary" class="widget-area" role="complementary">
 	<?php if(is_single()) { ?>
 		<div class="author-single row">
-        	<h3>この記事を書いた人</h3>
+        	<h3><i class="fa fa-check-square" aria-hidden="true"></i>この記事を書いた人</h3>
             <?php
                 
                 $q = new WP_Query(array(

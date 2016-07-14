@@ -11,7 +11,7 @@
 
 <section class="no-results not-found">
 	<header class="page-header">
-		<h1 class="page-title"><?php esc_html_e( 'Nothing Found', '_s' ); ?></h1>
+		<h1 class="page-title"><?php esc_html_e( '見つかりませんでした', '_s' ); ?></h1>
 	</header><!-- .page-header -->
 
 	<div class="page-content">
@@ -22,7 +22,7 @@
 
 		<?php elseif ( is_search() ) : ?>
 
-			<p><?php esc_html_e( 'Sorry, but nothing matched your search terms. Please try again with some different keywords.', '_s' ); ?></p>
+			<p><?php esc_html_e( '検索結果がありませんでした。別のワードで再度検索してみて下さい。', '_s' ); ?></p>
 			<?php
 				get_search_form();
 

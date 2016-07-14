@@ -19,9 +19,14 @@ get_header(); ?>
 		<?php
 		while ( have_posts() ) : the_post();
 
-			get_template_part( 'template-parts/content', get_post_format() );
+			get_template_part( 'template-parts/content', 'single' );
 
-			the_post_navigation();
+			the_post_navigation(
+            	array(
+            		'prev_text' => '<i class="fa fa-angle-double-left" aria-hidden="true"></i> 前の記事',
+                    'next_text' => '次の記事 <i class="fa fa-angle-double-right" aria-hidden="true"></i>'
+                )
+            );
 
 			// If comments are open or we have at least one comment, load up the comment template.
 //			if ( comments_open() || get_comments_number() ) :
@@ -38,6 +43,7 @@ get_header(); ?>
         $q = new WP_Query(array(
         	'post_type'=> 'post',
             'author' => get_the_author_meta( 'ID' ),
+            'post__not_in' => array(get_the_ID()),
            	'posts_per_page'=> 3,
            	'post_status' => 'publish',
             'orderby'=>'date ID',
@@ -51,15 +57,13 @@ get_header(); ?>
         	<?php while ( $q->have_posts() ) : $q->the_post(); ?>
             <article class="index">
             	<a href="<?php the_permalink(); ?>" title="<?php the_title(); ?>">
-            	<div class="wrap-thumb">
-                    <?php the_post_thumbnail(); ?>
-                </div>
-                
-                <div class="cover-bl">
+                    <div class="wrap-thumb">
+                        <?php the_post_thumbnail(); ?>
+                    </div>
+                    
                     <div class="fright">
                         <h4 class="entry-title"><?php the_title(); ?></h4>
                     </div>
-                </div>
                 </a>
             </article>
             

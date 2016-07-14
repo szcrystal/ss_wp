@@ -115,6 +115,8 @@ add_action( 'widgets_init', '_s_widgets_init' );
  */
 function _s_scripts() {
 	wp_enqueue_style( 'awsome', get_template_directory_uri() . '/css/font-awesome.min.css', false, '4.5.0', 'all');
+    wp_enqueue_style( 'mfizz', get_template_directory_uri() . '/font-mfizz/font-mfizz.css', false, '2.3.0', 'all');
+    wp_enqueue_style( 'devicon', get_template_directory_uri() . '/devicon/devicon.min.css', false, '2.0.0', 'all');
 
 	if(isAgent('all'))
     	wp_enqueue_style( 'style-sp', get_template_directory_uri() . '/style-sp.css');
@@ -183,7 +185,7 @@ function addMainClass() {
     elseif(is_post_type_archive()) {
     	$class .= get_post_type() . 's';
     }
-    elseif(is_home() || is_archive())
+    elseif(is_home() || is_archive() || is_search())
     	$class .= 'allpost';
     else
     	$class .= 'site';
@@ -203,7 +205,7 @@ function set_pagenation($queryArg = '') {
     the_posts_pagination(
     	array(
            'mid_size' => 1,
-           'prev_text' => '<i class="fa fa-angle-double-left"></i>Prev',
+           'prev_text' => '<i class="fa fa-angle-double-left"></i> Prev',
            'next_text' => 'Next <i class="fa fa-angle-double-right"></i>',
            'screen_reader_text' => __( 'Posts navigation' ),
            'before_page_number' => '<span class="meta-nav screen-reader-text">' . __( 'Page', 'cm' ) . ' </span>',
@@ -223,18 +225,29 @@ function outUrl($arg) {
 }
 
 /* Custom Excerpt */
+function new_excerpt_length($length) { 
+    return 100;
+}
+add_filter( 'excerpt_length', 'new_excerpt_length');
+
+function new_excerpt_more($more) {
+    return '';
+}
+add_filter('excerpt_more', 'new_excerpt_more');
+
+
 function sz_content($char_count) {
 
-    $more_class = '';
-    $texts = get_the_content('');
+    //$more_class = '';
+    $texts = get_the_excerpt();
     
     //$continue_format = '<a %shref="%s" title="%sのページへ"> …</a>';
     //$continue_format = sprintf($continue_format, $more_class, esc_url(get_permalink()), get_the_title());
     $continue_format = '...';
     
-    $texts = strip_tags($texts); //htmlタグを消す
-    $texts = str_replace("\n", '', $texts); //改行コード消し
-    
+    //$texts = strip_tags($texts); //html
+    //$texts = str_replace("\n", '', $texts); //改行
+        
     if(mb_strlen($texts) > $char_count+1) {
     	$texts = mb_substr($texts, 0, $char_count);
 	    $texts = $texts . $continue_format;
@@ -259,8 +272,6 @@ function create_member() {
             'hierarchical' => false,
             'menu_position' => 9,
             'has_archive' => true, 
-            //falseでも一覧自体は出力され、テンプレートが変わる(home.php->なければindex.php??ぽい)。
-            //trueならarchive-news.php なければarchive.php。
             'publicly_queryable' => true,
             'show_ui' => true,
             'query_var' => true,
@@ -274,38 +285,6 @@ function create_member() {
   
 }
 add_action( 'init', 'create_member' );
-
-
-function create_news() {
-	register_post_type( 'news',
-        array(
-            'labels' => array(
-            	'name' => 'ニュース',
-            	'singular_name' => 'NEWS', //news_project
-                'all_items' => 'ニュース一覧',
-                'add_new_item' => '新規ニュースを追加',
-                'edit_item' => 'ニュースを編集',
-          	),
-            'public' => true,
-            'hierarchical' => false,
-            'menu_position' => 8,
-            'has_archive' => true, 
-            //falseでも一覧自体は出力され、テンプレートが変わる(home.php->なければindex.php??ぽい)。
-            //trueならarchive-news.php なければarchive.php。
-            'publicly_queryable' => true,
-            'show_ui' => true,
-            'query_var' => true,
-            'capability_type' => 'post',
-            //'taxonomies' => array('category', 'post_tag'),
-            //'rewrite' => false,
-            'rewrite' => array('slug' => 'news', 'with_front' => false),
-            'supports' => array('title','editor','custom-fields', 'thumbnail', 'page-attributes', 'post-formats', 'comments')
-    )
-  );
-  
-}
-add_action( 'init', 'create_news' );
-
 
 
 //User Agent Check
@@ -349,44 +328,5 @@ function isLocal() {
 function isDK() {
 	return strpos($_SERVER['SERVER_NAME'], 'turquoise') !== false;
 }
-
-function getLog() {
-	//print_r($_SERVER);
-    
-	setlocale(LC_TIME, 'ja_JP.UTF-8');
-    date_default_timezone_set('Asia/Tokyo');
-    
-    $date = strftime('%Y%m%d');
-    //$logPath = realpath(dirname(__FILE__)) . '/logs';
-    $logPath = $_SERVER['DOCUMENT_ROOT']. '/logs';
-    $fileName = "{$logPath}/ss.log";
-    
-    $accessTime = strftime('%c');
-    //$accessTime = date('Y年m月d日 H時i分s秒', time());
-    //$accessFile = $_SERVER['SCRIPT_FILENAME'];
-    
-    $accessPage = urldecode($_SERVER['REQUEST_URI']);
-    $referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
-    $referer = urldecode($referer);
-    $agent = $_SERVER['HTTP_USER_AGENT'];
-    
-    $ip = $_SERVER['REMOTE_ADDR'];
-    $hostname = gethostbyaddr($ip);
-    
-    $log = "+ $accessTime $accessPage | $agent | $referer | $ip | $hostname\n";
-    
-    $fp = fopen($fileName, 'ab');
-    flock($fp, LOCK_SH);
-    fwrite($fp, $log);
-    fclose($fp);
-    
-}
-
-function tt() {
-	setlocale(LC_TIME, 'ja_JP.UTF-8');
-	date_default_timezone_set('Asia/Tokyo');
-    echo date('Y年m月d日 H時i分s秒', time());
-}
-
 
 

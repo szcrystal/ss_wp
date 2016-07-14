@@ -10,9 +10,14 @@
 ?>
 
 <article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
+	<?php 
+    	$image_id = get_post_thumbnail_id();
+		$image_url = wp_get_attachment_image_src($image_id, true);
+    	
+    ?>
 	<div class="wrap-thumb">
-    	<a href="<?php the_permalink(); ?>" title="<?php the_title(); ?>">
-    	<?php the_post_thumbnail(); ?>
+    	<a href="<?php the_permalink(); ?>" title="<?php the_title(); ?>" style="background-image:url(<?php echo $image_url[0]; ?>)">
+    	<?php //the_post_thumbnail(); ?>
         </a>
     </div>
 
@@ -22,12 +27,11 @@
 				the_title( '<h1 class="entry-title">', '</h1>' );
 			} else {
 				the_title( '<h2 class="entry-title"><a href="' . esc_url( get_permalink() ) . '" rel="bookmark">', '</a></h2>' );
-                
 			}
 
 		if ( 'post' === get_post_type() ) : ?>
 		<div class="entry-meta">
-			<?php //_s_posted_on(); ?>
+        	<a href="<?php the_permalink(); ?>"><i class="fa fa-calendar" aria-hidden="true"></i><?php echo ''. get_the_date(); ?></a>
 		</div><!-- .entry-meta -->
 		<?php
 		endif; ?>
@@ -37,7 +41,7 @@
 		<?php
         	//the_post_thumbnail();
             
-            sz_content(100);
+            sz_content(87);
 			
 //            the_content( sprintf(
 //				/* translators: %s: Name of current post. */

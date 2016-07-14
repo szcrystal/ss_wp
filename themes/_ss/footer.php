@@ -18,12 +18,12 @@
         <div class="site-info clear">
 			<div class="footer-menu">
 				<?php wp_nav_menu( array( 
-                	'theme_location' => 'primary', 
+                	'menu_name' => 'footer-menu', 
                     'menu_id' => 'foot-menu',
                 	'link_before' => '<i class="fa fa-chevron-circle-right" aria-hidden="true"></i>',    
                 ) ); ?>
             </div>
-            <div class="clear">
+            <div>
             	<address>
                 	<img src="<?php thisUrl('images/logo-white.png'); ?>" />
                     <p>〒150-0031<br>東京都渋谷区桜丘町27-1<br>エグゼクティブ渋谷204<br>
@@ -45,12 +45,7 @@
 
 <?php wp_footer(); ?>
 
+<span class="top_btn"><i class="fa fa-arrow-up" aria-hidden="true"></i></span>
 </body>
 </html>
-
-<?php 
-if(isDK()) getLog(); 
-
-?>
-
 

@@ -44,10 +44,10 @@
 		?>
 	</div><!-- .entry-content -->
     
-    <?php
+    <?php    
         $q = new WP_Query(array(
         	'post_type'=> 'post',
-            'author_name' => 'admin'/*get_the_author_meta( 'ID' )*/,
+            'author_name' => get_post_meta(get_the_ID(), 'author_name', true),
            	'posts_per_page'=> 3,
            	'post_status' => 'publish',
             'orderby'=>'date ID',
@@ -59,22 +59,22 @@
         <div class="author-post clear">
         	<h3>この人が書いたブログ</h3>
         	<?php while ( $q->have_posts() ) : $q->the_post(); ?>
-            <article class="index">
-            	<a href="<?php the_permalink(); ?>" title="<?php the_title(); ?>">
-            	<div class="wrap-thumb">
-                    <?php the_post_thumbnail(); ?>
-                </div>
-                
-                <div class="cover-bl">
+            
+                <article class="index">
+                    <a href="<?php the_permalink(); ?>" title="<?php the_title(); ?>">
+                    <div class="wrap-thumb">
+                        <?php the_post_thumbnail(); ?>
+                    </div>
+                    
                     <div class="fright">
                         <h4 class="entry-title"><?php the_title(); ?></h4>
                     </div>
-                </div>
-                </a>
-            </article>
+                    
+                    </a>
+                </article>
             
-            <?php
-            endwhile; ?>
+            <?php endwhile; ?>
+
 		</div>
 
     <?php endif; ?>

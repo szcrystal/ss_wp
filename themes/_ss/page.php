@@ -15,26 +15,7 @@
 
 get_header(); 
 
-//print_r($_SERVER);
-
-//if(strpos($_SERVER['REQUEST_URI'], 'about') !== false) {
-//	get_header();
-//    echo "bbb"; 
-//}
-//else {
-//	echo "aaa";
-//	include_once('../../../wp-config.php');
-//}
 ?>
-
-<?php 
-if(has_post_thumbnail()) { ?>
-<div class="wrap-cal" data-speed="2.5" data-y="0">
-    <div class="cal">
-	<?php the_post_thumbnail(); ?>
-    </div>
-</div>
-<?php } ?>
 
 <div id="content" class="site-content">
 	
@@ -46,11 +27,6 @@ if(has_post_thumbnail()) { ?>
 
 				get_template_part( 'template-parts/content', 'page' );
 
-				// If comments are open or we have at least one comment, load up the comment template.
-				if ( comments_open() || get_comments_number() ) :
-					comments_template();
-				endif;
-
 			endwhile; // End of the loop.
 			?>
 
@@ -58,5 +34,5 @@ if(has_post_thumbnail()) { ?>
 	</div><!-- #primary -->
 
 <?php
-//get_sidebar();
 get_footer();
+
